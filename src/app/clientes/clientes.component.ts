@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { Cliente } from "./cliente";
 import { ClienteService } from './cliente.service';
@@ -10,16 +11,23 @@ import { ClienteService } from './cliente.service';
 })
 export class ClientesComponent implements OnInit {
 
-  clientes: Cliente[] =[];
+  clientes: Cliente[] = [];
   constructor(private clienteService: ClienteService) { }
 
   ngOnInit(): void {
-    this.clienteService.getClientes().subscribe(
-      clientes => this.clientes = clientes
-    );
+    this.clienteService.getClientes().pipe(
+      tap(clientes => {
+        console.log('ClientesComponent:tap3')
+        clientes.forEach(cliente => {
+          console.log(cliente.nombre)
+        });
+      })
+    ).subscribe(
+          clientes => this.clientes = clientes
+        );
   }
 
-  delete(cliente:Cliente){
+  delete(cliente: Cliente) {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
@@ -27,7 +35,7 @@ export class ClientesComponent implements OnInit {
       },
       buttonsStyling: false
     })
-    
+
     swalWithBootstrapButtons.fire({
       title: 'Esta seguro?',
       text: `¿Seguro que desea eliminar al cliente ${cliente.nombre} ${cliente.apellido}?`,
@@ -40,7 +48,7 @@ export class ClientesComponent implements OnInit {
       if (result.isConfirmed) {
         this.clienteService.delete(cliente.id).subscribe(
           response => {
-            this.clientes = this.clientes.filter(cli => cli!= cliente)
+            this.clientes = this.clientes.filter(cli => cli != cliente)
             swalWithBootstrapButtons.fire(
               'Cliente eliminado!',
               `Cliente ${cliente.nombre} eliminado con éxito`,
@@ -49,7 +57,7 @@ export class ClientesComponent implements OnInit {
 
           }
         )
-       
+
       }
     })
   }

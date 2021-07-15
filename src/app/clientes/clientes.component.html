@@ -29,13 +29,13 @@
             {{cliente.nombre}}
           </td>
           <td>
-            {{cliente.apellido}}
+            {{cliente.apellido | uppercase}}
           </td>
           <td>
             {{cliente.email}}
           </td>
           <td>
-            {{cliente.createAt}}
+            {{cliente.createAt | date:"EEEE dd, MMMM yyyy"}}
           </td>
           <td>
             <button type="button" name="editar" [routerLink]="['/clientes/form',cliente.id]"
